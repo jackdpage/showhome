@@ -37,7 +37,7 @@ class EosHandler(Handler):
             elif address.split('/')[6] == 'list':
                 num = address.split('/')[5]
                 label = args[2]
-                self.groups[label] = num
+                self.groups[label.upper()] = num
 
         def preset_reply_handler(address, *args):
             '''
@@ -51,7 +51,7 @@ class EosHandler(Handler):
             elif address.split('/')[6] == 'list':
                 num = address.split('/')[5]
                 label = args[2]
-                self.presets[label] = num
+                self.presets[label.upper()] = num
 
         router = dispatcher.Dispatcher()
         router.map('/eos/out/get/group/*', group_reply_handler)
@@ -67,7 +67,6 @@ class EosHandler(Handler):
             server_thread.start()
         except (KeyboardInterrupt, SystemExit):
             server.shutdown()
-            raise
 
         self.generate_label_dict()
 
@@ -107,17 +106,21 @@ class EosHandler(Handler):
         cmd = ''.join(['Group ', str(group), ' Preset ', str(preset), '#'])
         self.send_eos_command(cmd)
 
+    def get_groups(self):
+        print(self.groups)
+        return self.groups
+
 
 # Public API begins here
 
 handler = EosHandler()
 
-@hug.put('/set/preset/label')
+@hug.put('/group/apply_preset/label')
 def set_preset_label(loc: hug.types.text, state: hug.types.text):
     '''Set a location to a certain preset, by label.'''
     handler.set_preset_label(loc, state)
 
-@hug.put('/set/preset/number')
+@hug.put('/group/apply_preset/number')
 def set_preset_number(group: hug.types.number, preset: hug.types.number):
     '''Apply a preset to a group by number.'''
     handler.set_preset_number(group, preset)
@@ -126,3 +129,7 @@ def set_preset_number(group: hug.types.number, preset: hug.types.number):
 def config_sync():
     '''Resync Eos information.'''
     handler.eos_sync()
+
+@hug.get('/group')
+def get_groups():
+    handler.get_groups()
