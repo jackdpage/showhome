@@ -52,7 +52,7 @@ class EosHandler(Handler):
             # data in the list by sending OSC requests for every index.
 
             elif address[5] == 'count':
-                print('Found {0} {1}'.format(args[0], eos_type))
+                self.log('Found {0} {1}'.format(args[0], eos_type))
                 for i in range(0, args[0]):
                     msg = '/eos/get/{0}/index/{1}'.format(eos_type, str(i))
                     self.send_osc_message(msg, 0)
