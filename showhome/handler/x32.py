@@ -86,6 +86,11 @@ class X32Handler(Handler):
             server.shutdown()
 
         self.generate_label_dict()
+        self.x32_subscribe()
+
+    def x32_subscribe(self):
+        threading.Timer(9, self.x32_subscribe).start()
+        self.send_osc_message('/xremote', '')
 
     def generate_label_dict(self):
         for i in range(1, 33):
